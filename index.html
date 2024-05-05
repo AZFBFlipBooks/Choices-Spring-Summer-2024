@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Choices </title>
+
+
+
+    <script src="https://kit.fontawesome.com/b0f29e9bfe.js" crossorigin="anonymous"></script>
+
+</head>
+
+<style>
+    @media screen and (max-width: 1080vw) {
+
+        .main-content,
+        .sidebar {
+
+            width: 100%;
+
+            margin: 0;
+
+            padding: 10px;
+
+        }
+
+    }
+
+    #pannable-container {
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+    }
+
+    * {
+
+        margin: 30;
+
+        padding: 0;
+
+        box-sizing: border-box;
+
+    }
+
+
+
+    body {
+
+        height: 100vw;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+
+
+        font-family: sans-serif;
+
+        background-color: lightgray;
+
+    }
+
+
+
+    /* Book */
+
+
+
+    .book {
+
+        position: relative;
+
+        width: 50vw;
+
+        height: 90vw;
+
+        transition: transform 0.5s;
+
+        flex-wrap: wrap;
+
+        display: flex;
+
+        z-index: 5;
+
+        margin: auto;
+        /* Center the book horizontally */
+        margin-top: 5vh;
+
+        position: relative;
+        /* Relative positioning for button placement */
+
+    }
+
+
+
+    .paper {
+
+        position: absolute;
+
+        width: 100%;
+
+        height: 100%;
+
+        top: 0;
+
+        left: 0;
+
+        perspective: 1500px;
+
+
+
+    }
+
+
+
+    .front,
+
+    .back {
+
+        background-color: transparent;
+
+        position: absolute;
+
+        width: auto;
+
+        height: auto;
+
+        top: 0;
+
+        left: 0;
+
+        transform-origin: left;
+
+        transition: transform 0.5s;
+
+    }
+
+
+
+    .front {
+
+        z-index: 1;
+
+        backface-visibility: hidden;
+
+        border-left: 3px solid powderblue;
+
+    }
+
+
+
+    .back {
+
+        z-index: 0;
+
+    }
+
+
+
+    .front-content,
+
+    .back-content {
+
+        width: 100%;
+
+        height: 100%;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+    }
+
+
+
+    .back-content {
+
+        transform: rotateY(180deg)
+    }
+
+
+
+    /* Paper flip effect */
+
+    .flipped .front,
+
+    .flipped .back {
+
+        transform: rotateY(-180deg);
+
+    }
+
+
+    #prevNextContainer {
+    display: flex;
+    justify-content: center; /* Center the buttons horizontally */
+    align-items: center; /* Align the buttons vertically */
+    width: 100%;
+    position: absolute; /* Positioning relative to the nearest positioned ancestor */
+    top: 5%; /* Adjust this percentage to move buttons above the zoom control */
+    z-index: 1010; /* Higher than zoom control to ensure it's on top */
+}
+
+.control-button {
+    margin: 0 1vw; /* Adjust space between buttons */
+    background-color: #ddd;
+    border: none;
+    padding: 2vh 4vw; /* Adjust padding for button size */
+    cursor: pointer;
+    font-size: 1.8vh; /* Adjust font size */
+    border-radius: 0.8vh; /* Rounded corners for aesthetics */
+}
+
+
+
+    /* Paper stack order */
+
+    #p1 {
+
+        z-index: 8;
+
+    }
+
+
+
+    #p2 {
+
+        z-index: 7;
+
+    }
+
+
+
+    #p3 {
+
+        z-index: 6;
+
+    }
+    #p4 {
+
+z-index: 5;
+
+}
+#p5 {
+
+z-index: 4;
+
+}
+#p6 {
+
+z-index: 3;
+
+}
+#p7 {
+
+z-index: 2;
+
+}
+#p8 {
+
+z-index: 1;
+
+}
+
+    /* Style for the zoom control container */
+
+    .zoom-control {
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+    position: absolute;
+    top: 12%; /* Adjust this value as needed to position vertically */
+    left: 50%; /* Center horizontally relative to the book */
+    transform: translateX(-50%); /* Center the zoom control on the book */
+    width: 80%;
+    }
+
+
+
+
+    /* Style for the label */
+
+    .zoom-control label {
+
+        font-weight: bold;
+        /* Make the label text bold */
+
+        margin-right: 10px;
+        /* Space between label and slider */
+
+    }
+
+
+
+    /* Style for the range input (zoom slider) */
+
+    #zoom-slider {
+
+        top: 20px;
+
+        width: 50%;
+        /* Control the width of the slider */
+
+        -webkit-appearance: none;
+        /* Override default appearance */
+
+        appearance: none;
+
+        height: 15px;
+        /* Height of the slider */
+
+        background: #ddd;
+        /* Background of the slider */
+
+        outline: none;
+        /* Remove the outline */
+
+        opacity: 0.7;
+        /* Slightly transparent */
+
+        -webkit-transition: .2s;
+        /* Transition for the slider handle */
+
+        transition: opacity .2s;
+
+    }
+
+
+
+    /* Style for the range input (zoom slider) when hovered */
+
+    #zoom-slider:hover {
+
+        opacity: 1;
+        /* Fully opaque on hover */
+
+    }
+
+
+
+    /* Style for the slider thumb (handle) */
+
+    #zoom-slider::-webkit-slider-thumb {
+
+        -webkit-appearance: none;
+        /* Override default appearance */
+
+        appearance: none;
+
+        width: 25px;
+        /* Width of the handle */
+
+        height: 25px;
+        /* Height of the handle */
+
+        background: #4CAF50;
+        /* Green background */
+
+        cursor: pointer;
+        /* Cursor changes to pointer */
+
+        border-radius: 50%;
+        /* Circular handle */
+
+    }
+
+
+
+    #zoom-slider::-moz-range-thumb {
+
+        top: 500px;
+
+        width: 25px;
+        /* Width of the handle */
+
+        height: 25px;
+        /* Height of the handle */
+
+        background: #4CAF50;
+        /* Green background */
+
+        cursor: pointer;
+        /* Cursor changes to pointer */
+
+        border-radius: 50%;
+        /* Circular handle */
+
+
+
+    }
+</style>
+
+
+
+<div id="prevNextContainer">
+    <button id="prev-btn" class="control-button">Previous</button>
+    <button id="next-btn" class="control-button">Next</button>
+</div>
+
+<div class="zoom-control">
+    <label for="zoom-slider">Zoom:</label>
+    <input type="range" id="zoom-slider" min="50" max="600" value="100">
+</div>
+
+
+
+<div id="pannable-container">
+
+    <div id="pannable-content">
+
+        <div class="container">
+
+            <!-- Book -->
+
+            <div id="book" class="book">
+
+                <!-- Paper 1 -->
+
+                <div id="p1" class="paper">
+
+                    <div class="front">
+
+                        <div id="f1" class="front-content">
+
+                            <img src="https://i.ibb.co/V2PLjGC/pg1update90.png" usemap="#image-map">
+
+<map name="image-map">
+    <area target="_blank" alt="Geo" title="Geo" href="https://shorturl.at/ijnGL" coords="400,597,781,631" shape="rect">
+    <area target="_blank" alt="EPA" title="EPA" href="https://www.epa.gov/ghgemissions/inventory-us-greenhouse-gas-emissions-and-sinks" coords="49,751,395,767" shape="rect">
+</map>
+                        </div>
+
+                    </div>
+
+                    <div class="back">
+
+                        <div id="b1" class="back-content">
+
+                            <img src="https://i.ibb.co/xMm1Sct/pg2-0.png" alt="pg-2" border="0">
+                            
+                             
+                        
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Paper 2 -->
+
+                <div id="p2" class="paper">
+
+                    <div class="front">
+
+                        <div id="f2" class="front-content">
+
+                            <img src="https://i.ibb.co/6mknkt6/pg3-0.png" usemap="#image-map2">
+
+                            <map name="image-map2">
+                                <area target="" alt="email" title="email" href="mailto:joelcarr@azfb.org" coords="444,389,535,404" shape="rect">
+                            </map>
+                            
+                        </div>
+                    </div>
+
+                    <div class="back">
+
+                        <div id="b2" class="back-content">
+                            <img src="https://i.ibb.co/SBsgqsk/222.png" usemap="#image-map3">
+
+                            <map name="image-map3">
+                                <area target="_blank" alt="AZFB" title="AZFB" href="https://shorturl.at/wFILR" coords="628,496,711,522" shape="rect">
+                                <area target="_blank" alt="Email2" title="Email2" href="mailto:elizabethrico@azfb.org" coords="536,531,656,543" shape="rect">
+                            </map>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Paper 3 -->
+
+                <div id="p3" class="paper">
+
+                    <div class="front">
+
+                        <div id="f3" class="front-content">
+
+                            <img src="https://i.ibb.co/b5Ck9xh/pg500.png" usemap="#image-map4">
+
+                            <map name="image-map4">
+                                <area target="_blank" alt="lifeline" title="lifeline" href="https://www.lifelinescreening.com/" coords="682,487,783,505" shape="rect">
+                            </map>
+                        </div>
+
+                    </div>
+
+                    <div class="back">
+
+                        <div id="b3" class="back-content">
+
+                            <img src="https://i.ibb.co/68qX7Cs/pg6-0.png" usemap="#image-map6">
+
+<map name="image-map6">
+    <area target="_blank" alt="EPA2" title="EPA2" href="https://www.fb.org/market-intel/2022-epa-emissions-inventory-highlights-agricultures-sustainability-strides" coords="20,946,392,976" shape="rect">
+</map>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Paper 4 -->
+
+                <div id="p4" class="paper">
+
+                    <div class="front">
+
+                        <div id="f4" class="front-content">
+
+                            <img src="https://i.ibb.co/DL84SM2/pg7-0.png" usemap="#image-map7">
+
+                            <map name="image-map7">
+                                <area target="_blank" alt="firewise" title="firewise" href="https://www.nifc.gov/fire-information/fire-prevention-education-mitigation/wildfire-mitigation/home" coords="411,978,638,993" shape="rect">
+                            </map>
+                        </div>
+
+                    </div>
+
+
+                    <div class="back">
+
+                        <div id="b4" class="back-content">
+                            <img src="https://i.ibb.co/w6btzbp/pg8-0.png" alt="pg-2" border="0">
+                            
+                        
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        </body>
+
+</html>
+
+<script>
+
+    // References to DOM Elements 
+
+    const prevBtn = document.querySelector("#prev-btn");
+
+    const nextBtn = document.querySelector("#next-btn");
+
+    const book = document.querySelector("#book");
+
+    const papers = [document.querySelector("#p1"), document.querySelector("#p2"), document.querySelector("#p3"), document.querySelector("#p4"), document.querySelector("#p5")];
+
+    const pannableContent = document.getElementById('pannable-content');
+
+    const zoomSlider = document.getElementById('zoom-slider');
+
+
+
+    // Variables for panning and zooming 
+
+    let zoomFactor = 1;
+
+    let panX = 0;
+
+    let panY = 0;
+
+    let isDragging = false;
+
+    let startX = 0;
+
+    let startY = 0;
+
+
+
+    // Variables for book navigation 
+
+    let currentLocation = 1;
+
+    const numOfPapers = papers.length;
+
+    const maxLocation = numOfPapers + 1;
+
+
+
+    // Event Listener for zoom control 
+
+    zoomSlider.addEventListener('input', () => {
+
+        zoomFactor = zoomSlider.value / 100;
+
+        updateZoomPan();
+
+    });
+
+
+
+    // Function to apply zoom and pan 
+
+    function updateZoomPan() {
+
+        pannableContent.style.transform = `scale(${zoomFactor}) translate(${panX}px, ${panY}px)`;
+
+        if (isDragging) {
+
+            requestAnimationFrame(updateZoomPan);
+
+        }
+
+    }
+
+
+
+    // Initial update for zoom and pan 
+
+    updateZoomPan();
+
+
+
+    // Mouse events for dynamic panning 
+
+    pannableContent.addEventListener('mousedown', (e) => {
+
+        e.preventDefault(); // Prevent default action 
+
+        isDragging = true;
+
+        startX = e.clientX - panX;
+
+        startY = e.clientY - panY;
+
+        pannableContent.style.cursor = 'grabbing';
+
+        requestAnimationFrame(updateZoomPan);
+
+    });
+
+
+
+    document.addEventListener('mouseup', () => {
+
+        isDragging = false;
+
+        pannableContent.style.cursor = 'grab';
+
+    });
+
+
+
+    document.addEventListener('mousemove', (e) => {
+
+        if (isDragging) {
+
+            e.preventDefault(); // Prevent default action during dragging 
+
+            panX = e.clientX - startX;
+
+            panY = e.clientY - startY;
+
+            pannableContent.style.cursor = 'grabbing';
+
+        }
+
+    });
+
+
+
+
+
+    // Event Listeners for navigation buttons 
+
+    prevBtn.addEventListener("click", goPrevPage);
+
+    nextBtn.addEventListener("click", goNextPage);
+
+
+
+    // Functions for page flipping 
+
+    function openBook() {
+
+        book.style.transform = "translateX(50%)";
+
+        prevBtn.style.transform = "translateX(0px)";
+
+        nextBtn.style.transform = "translateX(0px)";
+
+    }
+
+
+
+    function closeBook(isAtBeginning) {
+
+        book.style.transform = isAtBeginning ? "translateX(0%)" : "translateX(0%)";
+
+        prevBtn.style.transform = "translateX(0px)";
+
+        nextBtn.style.transform = "translateX(0px)";
+
+    }
+
+
+
+    function goNextPage() {
+    if (currentLocation < maxLocation) {
+        // Open book for first page
+        if (currentLocation === 1) {
+            openBook();
+        }
+
+        // Turn page
+        papers[currentLocation - 1].classList.add("flipped");
+        papers[currentLocation - 1].style.zIndex = currentLocation;
+
+        // Close book for last page
+        if (currentLocation === numOfPapers) {
+            closeBook(false);
+        }
+
+        currentLocation++;
+    }
+}
+
+function goPrevPage() {
+    if (currentLocation > 1) {
+        currentLocation--;
+
+        // If moving back from the last page
+        if (currentLocation === numOfPapers) {
+            openBook();
+        }
+
+        // If moving back to the first page
+        if (currentLocation === 1) {
+            closeBook(true);
+        }
+
+        // Turn page back
+        papers[currentLocation - 1].classList.remove("flipped");
+        papers[currentLocation - 1].style.zIndex = numOfPapers - currentLocation + 1;
+    }
+}
+
+
+</script>
